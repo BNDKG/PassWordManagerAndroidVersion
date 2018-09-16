@@ -9,6 +9,8 @@ import java.net.Socket;
 import com.google.gson.Gson;
 
 import android.app.Activity;
+import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -25,10 +27,10 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-
-    private Button zbutton2;
     private Button zbutton1;
+    private Button zbutton2;
     private Button zbutton3;
+    private Button zbutton4;
     private TextView ztextview1;
     private EditText zedittext1;
 
@@ -40,6 +42,7 @@ public class MainActivity extends Activity {
         zbutton1 =findViewById(R.id.button);
         zbutton2=findViewById(R.id.button2);
         zbutton3=findViewById(R.id.button3);
+        zbutton4=findViewById(R.id.button4);
 
         ztextview1 =findViewById(R.id.textView);
         zedittext1 =findViewById(R.id.editText);
@@ -118,7 +121,13 @@ public class MainActivity extends Activity {
                 //zzzzsecondbutton.setText(xxxd);
             }
         });
-
+        zbutton4.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this, ListChoiceActivity.class);
+                startActivity(intent);
+            }
+        });
 
         //Socket socket = null;
 
