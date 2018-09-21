@@ -27,7 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ListChoiceActivity"></activity>
+        <activity android:name=".zlistview.ListChoiceActivity"></activity>
     </application>
 
 </manifest>
