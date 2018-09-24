@@ -2,6 +2,7 @@ package com.example.zhangmingchen.zdsfsdf;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,11 +34,15 @@ public class MainActivity extends Activity {
     private Button zbutton2;
     private Button zbutton3;
     private Button zbutton4;
+    private Button zbutton5;
+
     private TextView ztextview1;
     private EditText zedittext1;
 
     private byte[] Getbuffer;
-    private List<PSW> curpswlist;
+    public static List<PSW> curpswlist;
+
+    public static String[] zdatas={"Apple","Banana","Orange","Watermelon","Pear","Grape","Pineapple"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +53,7 @@ public class MainActivity extends Activity {
         zbutton2=findViewById(R.id.button2);
         zbutton3=findViewById(R.id.button3);
         zbutton4=findViewById(R.id.button4);
+        zbutton5=findViewById(R.id.button5);
 
         ztextview1 =findViewById(R.id.textView);
         zedittext1 =findViewById(R.id.editText);
@@ -102,7 +108,7 @@ public class MainActivity extends Activity {
                     {
                         try {
 
-                            final Socket socket = new Socket( "192.168.3.9", 13000);
+                            final Socket socket = new Socket( "192.168.1.3", 13000);
                             OutputStream outputStream = socket.getOutputStream();
                             //byte Sendbuffer[] = new byte[256];
 
@@ -220,7 +226,30 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
+        zbutton5.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                curpswlist = new ArrayList<PSW>();
+
+                //读取本地文件夹目录
+                List<String> zmctest2=searchFiles(zPSW+"/"+"BNDKG","txt",false,new ArrayList<String>());
+                //List<String> PSWnames=new ArrayList<String>();
+                for(String item : zmctest2){
+                    String temp=loadFromSDFile(item);
+                    String savename=getFileName(item);
+
+                    PSW pswtest=new PSW();
+                    pswtest.name=savename;
+                    pswtest.psw=temp;
+                    pswtest.info=savename;
+                    curpswlist.add(pswtest);
+                    //PSWnames.add(savename);
+                }
+
+
+            }
+        });
         //Socket socket = null;
 
     }
@@ -276,6 +305,7 @@ public class MainActivity extends Activity {
             }
         }
     }
+    //写入文件
     private void createfiletest(String username,String filename,String psw){
         String Savepath=zPSW+"/"+username+"/"+filename+".txt";
         File file = new File(Savepath);
@@ -300,6 +330,36 @@ public class MainActivity extends Activity {
 
         }
 
+    }
+    private String loadFromSDFile(String fname) {
+
+        String result=null;
+
+        try {
+
+            File f=new File(fname);
+
+            int length=(int)f.length();
+
+            byte[] buff=new byte[length];
+
+            FileInputStream fin=new FileInputStream(f);
+
+            fin.read(buff);
+
+            fin.close();
+
+            result=new String(buff,"UTF-8");
+
+        }catch (Exception e){
+
+            e.printStackTrace();
+
+            Toast.makeText(MainActivity.this,"没有找到指定文件",Toast.LENGTH_SHORT).show();
+
+        }
+
+        return result;
 
     }
 

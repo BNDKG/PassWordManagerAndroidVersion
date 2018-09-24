@@ -8,7 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.zhangmingchen.zdsfsdf.MainActivity;
+import com.example.zhangmingchen.zdsfsdf.PSW;
 import com.example.zhangmingchen.zdsfsdf.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zhangmingchen on 2018/9/21.
@@ -19,14 +24,24 @@ public class ZListAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mLayoutInflater;
 
+    private List<PSW> zmList;
+
     public ZListAdapter(Context context){
+
+        //zmList=new ArrayList<String>();
+        //for (String zdata: MainActivity.zdatas) {zmList.add(zdata);}
+        zmList =MainActivity.curpswlist;
         this.mContext=context;
         mLayoutInflater=LayoutInflater.from(context);
+
+
     }
+
+
 
     @Override
     public int getCount() {
-        return 10;
+        return zmList.size();
     }
 
     @Override
@@ -61,9 +76,9 @@ public class ZListAdapter extends BaseAdapter {
 
         }
         //给控件赋值
-        holder.tvtitle.setText("fuck new z");
-        holder.tvtime.setText("fuck time sss");
-        holder.tvinfo.setText("fuck 3");
+        holder.tvtitle.setText(zmList.get(position).name);
+        holder.tvtime.setText(zmList.get(position).psw);
+        holder.tvinfo.setText(zmList.get(position).name);
         //Glide.with(mContext)
 
         return convertView;

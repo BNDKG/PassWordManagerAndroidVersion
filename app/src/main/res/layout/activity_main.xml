@@ -31,7 +31,7 @@
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="7dp"
+        android:layout_marginBottom="15dp"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <EditText
@@ -44,10 +44,11 @@
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="134dp"
+        android:layout_marginTop="108dp"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.502" />
 
     <Button
         android:id="@+id/button2"
@@ -59,14 +60,15 @@
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintRight_toRightOf="@+id/button"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="11dp"
-        app:layout_constraintLeft_toLeftOf="@+id/button" />
+        android:layout_marginBottom="15dp"
+        app:layout_constraintLeft_toLeftOf="@+id/button"
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <Button
         android:id="@+id/button3"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:text="复制到剪贴板"
+        android:text="保存"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/button4"
@@ -88,5 +90,18 @@
         tools:layout_constraintLeft_creator="1"
         android:layout_marginBottom="135dp"
         app:layout_constraintLeft_toLeftOf="@+id/button3" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
+        android:text="打开保存的密码"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/button4"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
