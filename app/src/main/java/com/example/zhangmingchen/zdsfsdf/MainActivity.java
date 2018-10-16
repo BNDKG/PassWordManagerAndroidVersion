@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
 
     private TextView ztextview1;
     private EditText zedittext1;
+    private EditText zpswtext1;
 
     private byte[] Getbuffer;
     public static List<PSW> curpswlist;
@@ -57,19 +58,23 @@ public class MainActivity extends Activity {
 
         ztextview1 =findViewById(R.id.textView);
         zedittext1 =findViewById(R.id.editText);
-
+        zpswtext1 =findViewById(R.id.editText2);
 
         zbutton1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                String curuser=zedittext1.getText().toString();
+                String upsw=zpswtext1.getText().toString();
+                //"BNDKG"
                 //第一个点击事件
-                String userflo2=zPSW+File.separator+"BNDKG";
+                String userflo2=zPSW+File.separator+curuser;
                 //删除保存的所有文件夹
                 deleteDir(userflo2);
                 //新建名为xxx的文件夹
-                createFileCatalogue("BNDKG");
+                createFileCatalogue(curuser);
+                //新建此用户密码
+                createUser(curuser,upsw);
 
-                createfiletest("BNDKG","config","fuck the world!");
                 //createfiletest("eee","thfdht");
 
                 /*
@@ -101,93 +106,115 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                Thread SendMsgTD = new Thread(new Runnable(){
-                    @Override
+                String curuser=zedittext1.getText().toString();
+                String upsw=zpswtext1.getText().toString();
 
-                    public void run()
-                    {
-                        try {
+                if(CheeckUserLocal(curuser,upsw)){
+                    Thread SendMsgTD = new Thread(new Runnable(){
+                        @Override
 
-                            final Socket socket = new Socket( "192.168.1.3", 13000);
-                            OutputStream outputStream = socket.getOutputStream();
-                            //byte Sendbuffer[] = new byte[256];
+                        public void run()
+                        {
+                            try {
+                                String curuser=zedittext1.getText().toString();
+                                String upsw=zpswtext1.getText().toString();
 
-                            Gson gson = new Gson();
+                                final Socket socket = new Socket( "192.168.3.9", 13000);
+                                OutputStream outputStream = socket.getOutputStream();
+                                //byte Sendbuffer[] = new byte[256];
 
-                            String[]usermassage2= { "1", "BNDKG", "kkk", "fdgr" };
-                            String ss2 = gson.toJson(usermassage2);
-                            byte[] Sendbuffer2 = ss2.getBytes();
-                            int xdfsdf=Sendbuffer2.length;
-                            String msglen=String.format("%04d",xdfsdf);
+                                Gson gson = new Gson();
 
-                            String []s = {"002", msglen};//String变量转换utf8测试
-                            String ss = gson.toJson(s);
-                            byte[] Sendbuffer = ss.getBytes();
+                                String[]usermassage2= { "1", curuser, upsw, "Superbndkg" };
+
+                                String ss2 = gson.toJson(usermassage2);
+                                byte[] Sendbuffer2 = ss2.getBytes();
+                                int xdfsdf=Sendbuffer2.length;
+                                String msglen=String.format("%04d",xdfsdf);
+
+                                String []usermessage1 = {"002", msglen};//String变量转换utf8测试
+                                String ss = gson.toJson(usermessage1);
+                                byte[] Sendbuffer = ss.getBytes();
 
 
-                            outputStream.write(Sendbuffer, 0, Sendbuffer.length);
-                            outputStream.write(Sendbuffer2, 0, Sendbuffer2.length);
+                                outputStream.write(Sendbuffer, 0, Sendbuffer.length);
+                                outputStream.write(Sendbuffer2, 0, Sendbuffer2.length);
 
-                            byte [] data1=new byte[28];
+                                byte [] data1=new byte[24];
 
-                            InputStream inputStream=socket.getInputStream();
+                                InputStream inputStream=socket.getInputStream();
 
-                            inputStream.read(data1,0,data1.length);
 
-                            String t22 = new String(data1);
-                            String [] te = gson.fromJson(t22,String[].class);
+                                Thread.sleep(2000);
+                                inputStream.read(data1,0,data1.length);
 
-                            int blen = Integer.parseInt(te[1]);
-                            int clen = Integer.parseInt(te[2]);
-                            int dlen = Integer.parseInt(te[3]);
+                                String t22 = new String(data1);
+                                String [] te = gson.fromJson(t22,String[].class);
 
-                            byte [] data2=new byte[blen];
-                            byte [] data3=new byte[clen];
-                            byte [] data4=new byte[dlen];
+                                int error=Integer.parseInt(te[0]);
+                                if(error==1){
+                                    int blen = Integer.parseInt(te[1]);
+                                    int clen = Integer.parseInt(te[2]);
+                                    int dlen = Integer.parseInt(te[3]);
 
-                            inputStream.read(data2,0,data2.length);
-                            inputStream.read(data3,0,data3.length);
-                            inputStream.read(data4,0,data4.length);
+                                    byte [] data2=new byte[blen];
+                                    byte [] data3=new byte[clen];
+                                    byte [] data4=new byte[dlen];
 
-                            String receive2=new String(data2);
-                            String[]receive22=gson.fromJson(receive2,String[].class);
-                            String receive3=new String(data3);
-                            String[]receive33=gson.fromJson(receive3,String[].class);
-                            String receive4=new String(data4);
-                            String[]receive44=gson.fromJson(receive4,String[].class);
+                                    inputStream.read(data2,0,data2.length);
+                                    inputStream.read(data3,0,data3.length);
+                                    inputStream.read(data4,0,data4.length);
 
-                            curpswlist = new ArrayList<PSW>();
-                            int ii = 0;
-                            for (String name : receive22) {
-                                PSW pswtest=new PSW();
-                                pswtest.name=name;
-                                pswtest.psw=receive33[ii];
-                                pswtest.info=receive44[ii];
-                                curpswlist.add(pswtest);
-                                ii++;
+                                    String receive2=new String(data2);
+                                    String[]receive22=gson.fromJson(receive2,String[].class);
+                                    String receive3=new String(data3);
+                                    String[]receive33=gson.fromJson(receive3,String[].class);
+                                    String receive4=new String(data4);
+                                    String[]receive44=gson.fromJson(receive4,String[].class);
+
+                                    curpswlist = new ArrayList<PSW>();
+                                    int ii = 0;
+                                    for (String name : receive22) {
+                                        PSW pswtest=new PSW();
+                                        pswtest.name=name;
+                                        pswtest.psw=receive33[ii];
+                                        pswtest.info=receive44[ii];
+                                        curpswlist.add(pswtest);
+                                        ii++;
+                                    }
+
+
+                                    outputStream.flush();
+                                }
+                                else{
+                                    Toast.makeText(MainActivity.this,"同步失败",Toast.LENGTH_SHORT).show();
+                                }
+
+
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
-
-
-                            outputStream.flush();
-
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
-                    }
 
-                },"");
+                    },"");
 
-                SendMsgTD.start();
-
+                    SendMsgTD.start();
+                }
 
             }
         });
         zbutton3.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String curuser=zedittext1.getText().toString();
+                String upsw=zpswtext1.getText().toString();
+
                 //读取本地文件夹目录
-                List<String> zmctest2=searchFiles(zPSW+"/"+"BNDKG","txt",false,new ArrayList<String>());
+                List<String> zmctest2=searchFiles(zPSW+"/"+curuser,"txt",false,new ArrayList<String>());
                 List<String> PSWnames=new ArrayList<String>();
                 for(String item : zmctest2){
                     String savename=getFileName(item);
@@ -200,7 +227,7 @@ public class MainActivity extends Activity {
                         //todo
                     }
                     else {
-                        createfiletest("BNDKG",searchinfo,curpsw.psw);
+                        createfiletest(curuser,searchinfo,curpsw.psw);
                     }
 
                 }
@@ -232,19 +259,24 @@ public class MainActivity extends Activity {
 
                 curpswlist = new ArrayList<PSW>();
 
-                //读取本地文件夹目录
-                List<String> zmctest2=searchFiles(zPSW+"/"+"BNDKG","txt",false,new ArrayList<String>());
-                //List<String> PSWnames=new ArrayList<String>();
-                for(String item : zmctest2){
-                    String temp=loadFromSDFile(item);
-                    String savename=getFileName(item);
+                String curuser=zedittext1.getText().toString();
+                String upsw=zpswtext1.getText().toString();
 
-                    PSW pswtest=new PSW();
-                    pswtest.name=savename;
-                    pswtest.psw=temp;
-                    pswtest.info=savename;
-                    curpswlist.add(pswtest);
-                    //PSWnames.add(savename);
+                if(CheeckUserLocal(curuser,upsw)){
+                    //读取本地文件夹目录
+                    List<String> zmctest2=searchFiles(zPSW+"/"+curuser,"txt",false,new ArrayList<String>());
+                    //List<String> PSWnames=new ArrayList<String>();
+                    for(String item : zmctest2){
+                        String temp=loadFromSDFile(item);
+                        String savename=getFileName(item);
+
+                        PSW pswtest=new PSW();
+                        pswtest.name=savename;
+                        pswtest.psw=temp;
+                        pswtest.info=savename;
+                        curpswlist.add(pswtest);
+                        //PSWnames.add(savename);
+                    }
                 }
 
 
@@ -305,32 +337,55 @@ public class MainActivity extends Activity {
             }
         }
     }
-    //写入文件
-    private void createfiletest(String username,String filename,String psw){
-        String Savepath=zPSW+"/"+username+"/"+filename+".txt";
+
+    private void createUser(String username,String psw){
+        String Savepath=zPSW+"/"+username+"/Config.upsw";
         File file = new File(Savepath);
-
         try {
-
             FileOutputStream fos = new FileOutputStream(file);
-
             //写入用户名和密码，以name##passwd的格式写入
-
             fos.write((psw).getBytes());
-
             //关闭输出流
-
             fos.close();
 
         } catch (Exception e) {
 
             // TODO Auto-generated catch block
-
             e.printStackTrace();
 
         }
+    }
+    private boolean CheeckUserLocal(String username,String psw){
+        String Savepath=zPSW+"/"+username+"/Config.upsw";
+        String Loadpsw=loadFromSDFile(Savepath);
+        if(psw.equals(Loadpsw)){
+            return true;
+        }
+        else{
+            Toast.makeText(MainActivity.this,"密码错误",Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
     }
+    //写入文件
+    private void createfiletest(String username,String filename,String psw){
+        String Savepath=zPSW+"/"+username+"/"+filename+".txt";
+        File file = new File(Savepath);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            //写入用户名和密码，以name##passwd的格式写入
+            fos.write((psw).getBytes());
+            //关闭输出流
+            fos.close();
+
+        } catch (Exception e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+    }
+
     private String loadFromSDFile(String fname) {
 
         String result=null;
