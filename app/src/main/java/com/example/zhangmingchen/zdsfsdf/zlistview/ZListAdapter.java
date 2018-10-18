@@ -78,7 +78,7 @@ public class ZListAdapter extends BaseAdapter {
         //给控件赋值
         holder.tvtitle.setText(zmList.get(position).name);
         holder.tvtime.setText(zmList.get(position).psw);
-        holder.tvinfo.setText(zmList.get(position).name);
+        holder.tvinfo.setText(zmList.get(position).info);
         //Glide.with(mContext)
 
         return convertView;

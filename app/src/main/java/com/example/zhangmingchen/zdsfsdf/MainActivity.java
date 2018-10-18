@@ -1,12 +1,15 @@
 package com.example.zhangmingchen.zdsfsdf;
 
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +22,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import static android.content.ContentValues.TAG;
 
 
 public class MainActivity extends Activity {
@@ -37,13 +45,19 @@ public class MainActivity extends Activity {
     private Button zbutton5;
 
     private TextView ztextview1;
-    private EditText zedittext1;
-    private EditText zpswtext1;
+    private EditText zedittext1=null;
+    private EditText zpswtext1=null;
+
+    private CheckBox zcheckbox;
 
     private byte[] Getbuffer;
     public static List<PSW> curpswlist;
 
     public static String[] zdatas={"Apple","Banana","Orange","Watermelon","Pear","Grape","Pineapple"};
+
+    private static final String CONTENT = "content";
+
+    public static String curaeskey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +74,32 @@ public class MainActivity extends Activity {
         zedittext1 =findViewById(R.id.editText);
         zpswtext1 =findViewById(R.id.editText2);
 
+        zcheckbox=findViewById(R.id.checkBox);
+
+        if (null!=savedInstanceState&&savedInstanceState.containsKey(CONTENT))
+        {
+            //异常退出恢复
+            zedittext1.setText(savedInstanceState.getString(CONTENT));
+        }
+        String loadpath=zPSW+"/Setting/setting";
+        try {
+            List<String>zzz=readFile(loadpath);
+            if(zzz.get(0).equals(" ")){
+
+            }
+            else {
+                zedittext1.setText(zzz.get(0));
+                zpswtext1.setText(zzz.get(1));
+                zcheckbox.setChecked(true);
+                //zedittext1.setText(loadFromSDFile(loadpath));
+            }
+
+
+        }
+        catch(Exception e) {}
+
+
+
         zbutton1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,6 +114,8 @@ public class MainActivity extends Activity {
                 createFileCatalogue(curuser);
                 //新建此用户密码
                 createUser(curuser,upsw);
+
+
 
                 //createfiletest("eee","thfdht");
 
@@ -119,9 +161,12 @@ public class MainActivity extends Activity {
                                 String curuser=zedittext1.getText().toString();
                                 String upsw=zpswtext1.getText().toString();
 
-                                final Socket socket = new Socket( "192.168.3.9", 13000);
+                                //final Socket socket = new Socket( "45.40.201.83", 13000);
+
+                                final Socket socket = new Socket( );
+                                InetSocketAddress socAddress = new InetSocketAddress("45.40.201.83", 13000);
+                                socket.connect(socAddress, 5000);
                                 OutputStream outputStream = socket.getOutputStream();
-                                //byte Sendbuffer[] = new byte[256];
 
                                 Gson gson = new Gson();
 
@@ -140,7 +185,7 @@ public class MainActivity extends Activity {
                                 outputStream.write(Sendbuffer, 0, Sendbuffer.length);
                                 outputStream.write(Sendbuffer2, 0, Sendbuffer2.length);
 
-                                byte [] data1=new byte[24];
+                                byte [] data1=new byte[26];
 
                                 InputStream inputStream=socket.getInputStream();
 
@@ -185,23 +230,62 @@ public class MainActivity extends Activity {
 
 
                                     outputStream.flush();
+
+                                    //String curuser=zedittext1.getText().toString();
+                                    //String upsw=zpswtext1.getText().toString();
+
+                                    //读取本地文件夹目录
+                                    List<String> zmctest2=searchFiles(zPSW+"/"+curuser,"txt",false,new ArrayList<String>());
+                                    List<String> PSWnames=new ArrayList<String>();
+                                    for(String item : zmctest2){
+                                        String savename=getFileName(item);
+                                        PSWnames.add(savename);
+
+                                    }
+                                    for(PSW curpsw:curpswlist){
+                                        String searchinfo=curpsw.info;
+                                        if(zmctest2.contains(searchinfo)){
+                                            //todo
+                                        }
+                                        else {
+                                            createfiletest(curuser,searchinfo,curpsw.psw);
+                                        }
+
+                                    }
+
+                                    Looper.prepare();
+                                    Toast.makeText(MainActivity.this,"同步成功",Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
                                 }
                                 else{
+                                    outputStream.flush();
+                                    Looper.prepare();
                                     Toast.makeText(MainActivity.this,"同步失败",Toast.LENGTH_SHORT).show();
+                                    Looper.loop();
                                 }
 
 
 
                             } catch (IOException e) {
+                                Looper.prepare();
+                                Toast.makeText(MainActivity.this,"服务器连接失败",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
                                 e.printStackTrace();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
+                            }catch (Exception e){
+                                Looper.prepare();
+                                Toast.makeText(MainActivity.this,"数据获取错误",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
                             }
                         }
 
                     },"");
 
                     SendMsgTD.start();
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"账户密码错误",Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -210,27 +294,83 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                String curuser=zedittext1.getText().toString();
-                String upsw=zpswtext1.getText().toString();
+                Thread SendMsgTD = new Thread(new Runnable(){
+                    @Override
 
-                //读取本地文件夹目录
-                List<String> zmctest2=searchFiles(zPSW+"/"+curuser,"txt",false,new ArrayList<String>());
-                List<String> PSWnames=new ArrayList<String>();
-                for(String item : zmctest2){
-                    String savename=getFileName(item);
-                    PSWnames.add(savename);
+                    public void run()
+                    {
+                        try {
+                            String curuser=zedittext1.getText().toString();
+                            String upsw=zpswtext1.getText().toString();
 
-                }
-                for(PSW curpsw:curpswlist){
-                    String searchinfo=curpsw.info;
-                    if(zmctest2.contains(searchinfo)){
-                        //todo
+                            final Socket socket = new Socket( );
+                            InetSocketAddress socAddress = new InetSocketAddress("45.40.201.83", 13000);
+                            socket.connect(socAddress, 3000);
+
+                            OutputStream outputStream = socket.getOutputStream();
+                            //byte Sendbuffer[] = new byte[256];
+
+                            Gson gson = new Gson();
+
+                            String[]usermassage2= { "0", curuser, upsw, "Superbndkg" };
+
+                            String ss2 = gson.toJson(usermassage2);
+                            byte[] Sendbuffer2 = ss2.getBytes();
+                            int xdfsdf=Sendbuffer2.length;
+                            String msglen=String.format("%04d",xdfsdf);
+
+                            String []usermessage1 = {"002", msglen};//String变量转换utf8测试
+                            String ss = gson.toJson(usermessage1);
+                            byte[] Sendbuffer = ss.getBytes();
+
+
+                            outputStream.write(Sendbuffer, 0, Sendbuffer.length);
+                            outputStream.write(Sendbuffer2, 0, Sendbuffer2.length);
+
+                            byte [] data1=new byte[16];
+
+                            InputStream inputStream=socket.getInputStream();
+
+
+                            Thread.sleep(2000);
+                            inputStream.read(data1,0,data1.length);
+
+                            String t22 = new String(data1);
+                            String [] te = gson.fromJson(t22,String[].class);
+
+                            int error=Integer.parseInt(te[0]);
+                            if(error==1){
+
+                                Looper.prepare();
+                                Toast.makeText(MainActivity.this,"服务器连接正常",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+
+
+                            }
+                            else{
+                                Looper.prepare();
+                                Toast.makeText(MainActivity.this,"服务器忙",Toast.LENGTH_SHORT).show();
+                                Looper.loop();
+                            }
+                            outputStream.flush();
+
+
+                        } catch (IOException e) {
+                            Looper.prepare();
+                            Toast.makeText(MainActivity.this,"服务器连接失败",Toast.LENGTH_SHORT).show();
+                            Looper.loop();
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+
+                            e.printStackTrace();
+                        }catch (Exception e){
+
+                        }
                     }
-                    else {
-                        createfiletest(curuser,searchinfo,curpsw.psw);
-                    }
 
-                }
+                },"");
+
+                SendMsgTD.start();
 
                 /*
                 String xxxd= zedittext1.getText().toString();
@@ -249,14 +389,8 @@ public class MainActivity extends Activity {
         zbutton4.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this, ListChoiceActivity.class);
-                startActivity(intent);
-            }
-        });
-        zbutton5.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
+                //==============从存储中读取================//
                 curpswlist = new ArrayList<PSW>();
 
                 String curuser=zedittext1.getText().toString();
@@ -278,6 +412,20 @@ public class MainActivity extends Activity {
                         //PSWnames.add(savename);
                     }
                 }
+                //更新aes key
+                curaeskey=Aes.getMD5(zpswtext1.getText().toString());
+
+                //================开启text view====================//
+                Intent intent=new Intent(MainActivity.this, ListChoiceActivity.class);
+                startActivity(intent);
+            }
+        });
+        zbutton5.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                deleteDir(zPSW);
 
 
             }
@@ -285,6 +433,40 @@ public class MainActivity extends Activity {
         //Socket socket = null;
 
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)//保存Activity的状态
+    {
+        super.onSaveInstanceState(outState);
+
+        String content=zedittext1.getText().toString();
+        outState.putString(CONTENT,content);
+    }
+    @Override
+    public void finish() {
+        String curname=zedittext1.getText().toString();
+        String curpsw=zpswtext1.getText().toString();
+        String setpath=zPSW+"/Setting";
+        File destDir = new File(setpath);
+        if (!destDir.exists()) {
+            boolean zmc=destDir.mkdirs();
+            if(!zmc){
+                int ds=10;//判断是否开了权限
+            }
+        }
+
+        zcheckbox =findViewById(R.id.checkBox);
+
+        if (zcheckbox.isChecked()) {
+            SaveSettings(curpsw,curname);
+        }
+        else {
+            SaveSettings(" "," ");
+        }
+
+        super.finish();
+    }
+
 
     private boolean mIsExit;//双击返回键退出
     @Override
@@ -355,6 +537,28 @@ public class MainActivity extends Activity {
 
         }
     }
+
+
+
+    private void SaveSettings(String ipadd,String name){
+        String Savepath=zPSW+"/Setting/setting";
+        File file = new File(Savepath);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            //写入用户名和密码，以name##passwd的格式写入
+            fos.write((name).getBytes());
+            fos.write("\r\n".getBytes());
+            fos.write((ipadd).getBytes());
+            //关闭输出流
+            fos.close();
+
+        } catch (Exception e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+    }
     private boolean CheeckUserLocal(String username,String psw){
         String Savepath=zPSW+"/"+username+"/Config.upsw";
         String Loadpsw=loadFromSDFile(Savepath);
@@ -410,13 +614,41 @@ public class MainActivity extends Activity {
 
             e.printStackTrace();
 
-            Toast.makeText(MainActivity.this,"没有找到指定文件",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this,"没有找到指定文件",Toast.LENGTH_SHORT).show();
 
         }
 
         return result;
 
     }
+    /**读取文件
+     * @param strFilePath
+     */
+    public List<String> readFile(String strFilePath){
+        List<String> txtList = new ArrayList<>();
+        File file = new File(strFilePath);
+        if (file.isDirectory()){
+            Log.d(TAG, "The File doesn't not exist.");
+        }else{
+            try{
+                InputStream instream = new FileInputStream(file);
+                if (instream != null){
+                    InputStreamReader inputreader = new InputStreamReader(instream);
+                    BufferedReader buffreader = new BufferedReader(inputreader);
+                    String line;
+                    //逐行读取
+                    while (( line = buffreader.readLine()) != null){
+                        txtList.add(line);
+                    }
+                    instream.close();
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return txtList;
+    }
+
 
     public String getFileName(String pathandname){
 

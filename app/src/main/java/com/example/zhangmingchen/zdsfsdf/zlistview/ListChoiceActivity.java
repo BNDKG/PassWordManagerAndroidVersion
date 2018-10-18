@@ -17,13 +17,14 @@ public class ListChoiceActivity extends Activity {
 
 
     private ListView mLV1;
+    private  String aaa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_choice);
 
-
+        aaa=MainActivity.curaeskey;
 
 
         mLV1=findViewById(R.id.zListview);
@@ -32,10 +33,10 @@ public class ListChoiceActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String Pswoutput=Aes.decrypt("12345678876543211234567887654abc",MainActivity.curpswlist.get(position).psw);
+                String Pswoutput=Aes.decrypt(aaa,MainActivity.curpswlist.get(position).psw);
 
                 onCbd(Pswoutput);
-                //Toast.makeText(ListChoiceActivity.this,"pos:"+position,Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListChoiceActivity.this,"复制成功",Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -53,7 +54,7 @@ public class ListChoiceActivity extends Activity {
 
     }
     public void aeschanges(){
-        String keyz="12345678876543211234567887654abc";
+        String keyz=aaa;
         String ee="111";
         String out = Aes.encrypt(keyz,ee);
 

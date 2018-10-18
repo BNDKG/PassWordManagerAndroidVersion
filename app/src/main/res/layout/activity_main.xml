@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:text="Fxxk the World!"
         android:id="@+id/textView"
-        tools:layout_constraintBottom_creator="1"
         android:layout_marginStart="16dp"
+        tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_constraintLeft_creator="1"
         android:layout_marginBottom="16dp"
@@ -23,16 +23,15 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
         android:text="重新生成账户"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintRight_toRightOf="@+id/button2"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="@+id/button2" />
 
     <EditText
         android:id="@+id/editText"
@@ -40,68 +39,63 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:hint="Username"
+        android:text=""
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="58dp"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.497" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="0dp"
-        android:layout_height="51dp"
-        android:text="连接服务器"
+        android:layout_height="50dp"
+        android:text="同步账户"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/button3"
-        app:layout_constraintRight_toRightOf="@+id/button"
+        app:layout_constraintRight_toRightOf="@+id/button3"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="15dp"
-        app:layout_constraintLeft_toLeftOf="@+id/button"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintLeft_toLeftOf="@+id/button3" />
 
     <Button
         android:id="@+id/button3"
         android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:text="保存"
+        android:layout_height="50dp"
+        android:text="连接测试"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toTopOf="@+id/button4"
-        app:layout_constraintRight_toRightOf="@+id/button2"
+        app:layout_constraintRight_toRightOf="@+id/button4"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="7dp"
-        app:layout_constraintLeft_toLeftOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintLeft_toLeftOf="@+id/button4" />
 
     <Button
         android:id="@+id/button4"
         android:layout_width="0dp"
-        android:layout_height="49dp"
-        android:text="打开新的textview"
+        android:layout_height="50dp"
+        android:text="查看密码"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintBottom_creator="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="@+id/button3"
+        app:layout_constraintBottom_toTopOf="@+id/button5"
+        app:layout_constraintRight_toRightOf="@+id/button5"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="135dp"
-        app:layout_constraintLeft_toLeftOf="@+id/button3" />
+        app:layout_constraintLeft_toLeftOf="@+id/button5" />
 
     <Button
         android:id="@+id/button5"
         android:layout_width="200dp"
-        android:layout_height="48dp"
-        android:text="打开保存的密码"
-        tools:layout_constraintTop_creator="1"
+        android:layout_height="0dp"
+        android:text="清除所有数据"
         tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/button4"
         tools:layout_constraintLeft_creator="1"
+        android:layout_marginBottom="48dp"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <EditText
@@ -110,6 +104,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword"
+        android:hint="Password"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
         app:layout_constraintRight_toRightOf="@+id/editText"
@@ -117,5 +112,16 @@
         app:layout_constraintTop_toBottomOf="@+id/editText"
         tools:layout_constraintLeft_creator="1"
         app:layout_constraintLeft_toLeftOf="@+id/editText" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="记住密码"
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginTop="18dp"
+        app:layout_constraintTop_toBottomOf="@+id/editText2"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/editText2" />
 
 </android.support.constraint.ConstraintLayout>
